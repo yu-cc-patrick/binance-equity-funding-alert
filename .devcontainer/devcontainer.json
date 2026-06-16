@@ -1,0 +1,29 @@
+{
+  "name": "binance-equity-funding-alert",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "."
+  },
+
+  // 防火墙需要这两个能力来改 iptables/ipset
+  "capAdd": ["NET_ADMIN", "NET_RAW"],
+
+  // 精确挂载:只挂当前项目目录,绝不挂 home / .ssh / .aws
+  // workspaceFolder 默认就是把项目挂到 /workspace,不额外加 mounts
+  "workspaceFolder": "/workspace",
+
+  // 容器创建后先拉起防火墙(以 sudo,因为要改 iptables)
+  "postCreateCommand": "sudo /usr/local/bin/init-firewall.sh",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python"
+      ]
+    }
+  },
+
+  // 提示:进容器后用 `claude --dangerously-skip-permissions` 开 YOLO 模式。
+  // 安全性押在上面的防火墙 + 精确挂载上,不在权限开关上。
+  "remoteUser": "dev"
+}

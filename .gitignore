@@ -1,0 +1,5 @@
+# state.json 需要被 GitHub Actions 提交回仓库做状态持久化, 不要忽略
+__pycache__/
+*.pyc
+.venv/
+.env
