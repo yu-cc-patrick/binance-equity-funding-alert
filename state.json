@@ -296,7 +296,7 @@
     "high": false
   },
   "SPYUSDT": {
-    "extreme": true,
+    "extreme": false,
     "high": false
   },
   "STXXUSDT": {
