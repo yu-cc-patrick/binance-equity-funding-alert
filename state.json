@@ -11,6 +11,10 @@
     "extreme": false,
     "high": false
   },
+  "ALABUSDT": {
+    "extreme": false,
+    "high": false
+  },
   "AMATUSDT": {
     "extreme": false,
     "high": false
@@ -68,6 +72,10 @@
     "high": false
   },
   "CBRSUSDT": {
+    "extreme": false,
+    "high": false
+  },
+  "CIENUSDT": {
     "extreme": false,
     "high": false
   },
@@ -195,11 +203,23 @@
     "extreme": false,
     "high": false
   },
+  "KLACUSDT": {
+    "extreme": false,
+    "high": false
+  },
+  "KORUUSDT": {
+    "extreme": false,
+    "high": false
+  },
   "LITEUSDT": {
     "extreme": false,
     "high": false
   },
   "LLYUSDT": {
+    "extreme": false,
+    "high": false
+  },
+  "LRCXUSDT": {
     "extreme": false,
     "high": false
   },
@@ -283,7 +303,15 @@
     "extreme": false,
     "high": false
   },
+  "SMCIUSDT": {
+    "extreme": false,
+    "high": false
+  },
   "SNDKUSDT": {
+    "extreme": false,
+    "high": false
+  },
+  "SONYUSDT": {
     "extreme": false,
     "high": false
   },
