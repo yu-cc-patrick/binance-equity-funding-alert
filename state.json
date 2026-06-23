@@ -209,7 +209,7 @@
   },
   "KORUUSDT": {
     "extreme": false,
-    "high": true
+    "high": false
   },
   "LITEUSDT": {
     "extreme": false,
