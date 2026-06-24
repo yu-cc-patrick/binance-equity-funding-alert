@@ -328,7 +328,7 @@
     "high": false
   },
   "STXXUSDT": {
-    "extreme": true,
+    "extreme": false,
     "high": false
   },
   "TSLAUSDT": {
