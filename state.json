@@ -243,6 +243,10 @@
     "extreme": false,
     "high": false
   },
+  "MVLLUSDT": {
+    "extreme": false,
+    "high": false
+  },
   "NBISUSDT": {
     "extreme": false,
     "high": false
@@ -327,7 +331,15 @@
     "extreme": false,
     "high": false
   },
+  "SQQQUSDT": {
+    "extreme": false,
+    "high": false
+  },
   "STXXUSDT": {
+    "extreme": false,
+    "high": false
+  },
+  "TQQQUSDT": {
     "extreme": false,
     "high": false
   },
