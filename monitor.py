@@ -233,6 +233,13 @@ def diff_and_alerts(market, prev_state):
 
 
 def main():
+    # 测试模式:设 TEST_MSG 环境变量则只发一条测试消息并退出
+    test_msg = os.environ.get("TEST_MSG", "")
+    if test_msg:
+        send_telegram(test_msg)
+        print("[INFO] 测试消息已发送。")
+        return
+
     try:
         market = fetch_market()
     except Exception as exc:  # noqa: BLE001
