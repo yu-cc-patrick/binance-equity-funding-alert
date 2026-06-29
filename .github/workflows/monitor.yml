@@ -3,7 +3,12 @@ name: binance-equity-funding-alert
 on:
   schedule:
     - cron: "*/5 * * * *"   # 每5分钟(高峰期可能延迟, 不保证精确)
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      test_msg:
+        description: '测试消息内容(填了就只发这条消息,不跑监控)'
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -26,8 +31,9 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          BINANCE_BASE: ${{ secrets.BINANCE_BASE }}   # 指向非美区 relay
+          BINANCE_BASE: ${{ secrets.BINANCE_BASE }}
           RELAY_TOKEN: ${{ secrets.RELAY_TOKEN }}
+          TEST_MSG: ${{ inputs.test_msg }}          # 测试消息(手动触发时可选传)
         run: python monitor.py
 
       - name: Persist state
