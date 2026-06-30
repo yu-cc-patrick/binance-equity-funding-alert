@@ -33,7 +33,7 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           BINANCE_BASE: ${{ secrets.BINANCE_BASE }}
           RELAY_TOKEN: ${{ secrets.RELAY_TOKEN }}
-          WECHAT_WEBHOOK_KEY: ${{ secrets.WECHAT_WEBHOOK_KEY }}
+          PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
           TEST_MSG: ${{ inputs.test_msg }}
         run: python monitor.py
 

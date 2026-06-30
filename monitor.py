@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""币安「链上美股永续」资金费率预警 -> Telegram + 企业微信
+"""币安「链上美股永续」资金费率预警 -> Telegram + 微信
 
 只监控币安 USDⓈ-M 上的 tokenized 股票永续(underlyingType == "EQUITY",
 如 AAPLUSDT / MSFTUSDT), 其余加密币种忽略。监控对象由 exchangeInfo
@@ -12,7 +12,7 @@
 在 GitHub Actions 上每 5 分钟运行一次。由于币安封锁美区 IP(451),
 而 GHA runner 在美区, 因此请求经由非美区中转(relay)转发到币安。
 状态持久化在 state.json, 由 GitHub Actions 提交回仓库。
-同时推送到 Telegram 和企业微信群机器人。
+通过 Telegram Bot + PushPlus 同时推送到 Telegram 和个人微信。
 """
 import json
 import os
@@ -88,7 +88,7 @@ BINANCE_BASE = get_secret("BINANCE_BASE", "https://fapi.binance.com").rstrip("/"
 RELAY_TOKEN = get_secret("RELAY_TOKEN")
 TG_TOKEN = get_secret("TELEGRAM_BOT_TOKEN")
 TG_CHAT_ID = get_secret("TELEGRAM_CHAT_ID")
-WX_KEY = get_secret("WECHAT_WEBHOOK_KEY")        # 企业微信群机器人 webhook key
+WX_KEY = get_secret("PUSHPLUS_TOKEN")           # PushPlus 推送 Token(个人微信)
 
 
 def http_get_json(url):
@@ -186,31 +186,26 @@ def send_telegram(text):
         resp.read()
 
 
-def _tg_html_to_wx_md(text):
-    """将 Telegram HTML 消息转为企业微信机器人支持的 Markdown。
-
-    企业微信机器人 markdown 子集: **粗体**、#标题、>引用、[链接](url)、
-    <font color="...">着色。不支持 <b>/<i>/<u> 等 HTML 标签。
-    """
-    import re
-    out = text
-    out = re.sub(r"<b>(.*?)</b>", r"**\1**", out)
-    out = out.replace("\n\n", "\n> \n")  # 段落间用空引用行隔开(视觉分隔)
-    return out
-
-
 def send_wechat(text):
+    """通过 PushPlus 推送到个人微信。
+
+    PushPlus 支持 HTML 模板, 与 Telegram 共用同一份 HTML 格式消息,
+    无需额外转换。
+    """
     if not WX_KEY:
-        print("[INFO] 未配置企业微信 Webhook, 跳过微信推送。")
+        print("[INFO] 未配置 PushPlus, 跳过微信推送。")
         return
-    url = f"https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key={WX_KEY}"
-    md = _tg_html_to_wx_md(text)
+    # 取第一行作标题(最多 100 字)
+    title = text.split("\n")[0][:100]
     payload = json.dumps({
-        "msgtype": "markdown",
-        "markdown": {"content": md},
+        "token": WX_KEY,
+        "title": title,
+        "content": text,
+        "template": "html",
     }).encode("utf-8")
+    # PushPlus 用 HTTP(非 HTTPS) + JSON
     req = urllib.request.Request(
-        url, data=payload,
+        "http://www.pushplus.plus/send", data=payload,
         headers={"Content-Type": "application/json"},
     )
     with urllib.request.urlopen(req, timeout=20) as resp:
