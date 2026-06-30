@@ -33,7 +33,8 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           BINANCE_BASE: ${{ secrets.BINANCE_BASE }}
           RELAY_TOKEN: ${{ secrets.RELAY_TOKEN }}
-          TEST_MSG: ${{ inputs.test_msg }}          # 测试消息(手动触发时可选传)
+          WECHAT_WEBHOOK_KEY: ${{ secrets.WECHAT_WEBHOOK_KEY }}
+          TEST_MSG: ${{ inputs.test_msg }}
         run: python monitor.py
 
       - name: Persist state
