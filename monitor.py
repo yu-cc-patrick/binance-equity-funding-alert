@@ -190,12 +190,11 @@ def send_wechat(text):
     """通过 PushPlus 推送到个人微信。
 
     PushPlus 支持 HTML 模板, 与 Telegram 共用同一份 HTML 格式消息,
-    无需额外转换。
+    无需额外转换。走 HTTPS(非 HTTP), 并检查服务端返回码。
     """
     if not WX_KEY:
         print("[INFO] 未配置 PushPlus, 跳过微信推送。")
         return
-    # 取第一行作标题(最多 100 字)
     title = text.split("\n")[0][:100]
     payload = json.dumps({
         "token": WX_KEY,
@@ -203,13 +202,17 @@ def send_wechat(text):
         "content": text,
         "template": "html",
     }).encode("utf-8")
-    # PushPlus 用 HTTP(非 HTTPS) + JSON
     req = urllib.request.Request(
-        "http://www.pushplus.plus/send", data=payload,
+        "https://www.pushplus.plus/send", data=payload,
         headers={"Content-Type": "application/json"},
     )
     with urllib.request.urlopen(req, timeout=20) as resp:
-        resp.read()
+        body = json.loads(resp.read().decode("utf-8"))
+    code = body.get("code", -1)
+    if code == 200:
+        print(f"[INFO] PushPlus 发送成功 ({body.get('data','')})")
+    else:
+        print(f"[WARN] PushPlus 返回异常: code={code} msg={body.get('msg','')}")
 
 
 def broadcast(text):
