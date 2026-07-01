@@ -189,23 +189,33 @@ def send_telegram(text):
 def send_wechat(text):
     """通过 PushPlus 推送到个人微信。
 
-    PushPlus 支持 HTML 模板, 与 Telegram 共用同一份 HTML 格式消息,
-    无需额外转换。走 HTTPS(非 HTTP), 并检查服务端返回码。
+    优先走 relay 中转(GHA 美区 runner 可能直连不上 pushplus.plus),
+    若未配 relay 则直连。HTML 模板, 与 Telegram 共用同一份消息。
     """
     if not WX_KEY:
         print("[INFO] 未配置 PushPlus, 跳过微信推送。")
         return
     title = text.split("\n")[0][:100]
-    payload = json.dumps({
+    payload_body = json.dumps({
         "token": WX_KEY,
         "title": title,
         "content": text,
         "template": "html",
-    }).encode("utf-8")
-    req = urllib.request.Request(
-        "https://www.pushplus.plus/send", data=payload,
-        headers={"Content-Type": "application/json"},
-    )
+    })
+
+    # 优先走 relay 中转(新加坡 → 中国更稳定); 没配 relay 则直连
+    if BINANCE_BASE and BINANCE_BASE.startswith("https://"):
+        url = BINANCE_BASE + "/pushplus"
+        headers = {"Content-Type": "application/json", "User-Agent": "equity-funding-alert/1.0"}
+        if RELAY_TOKEN:
+            headers["X-Relay-Token"] = RELAY_TOKEN
+        print("[INFO] PushPlus 经 relay 发送...")
+    else:
+        url = "https://www.pushplus.plus/send"
+        headers = {"Content-Type": "application/json"}
+        print("[INFO] PushPlus 直连发送...")
+
+    req = urllib.request.Request(url, data=payload_body.encode("utf-8"), headers=headers)
     with urllib.request.urlopen(req, timeout=20) as resp:
         body = json.loads(resp.read().decode("utf-8"))
     code = body.get("code", -1)
