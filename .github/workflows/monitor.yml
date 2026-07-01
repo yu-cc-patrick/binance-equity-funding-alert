@@ -38,9 +38,11 @@ jobs:
         run: |
           # 先探路: PushPlus 在 GHA 美区 runner 上到底能不能通
           echo "=== PushPlus 连通性探测 ==="
-          curl -sv --max-time 10 https://www.pushplus.plus/send -X POST \
+          PP_BODY='{"token":"'"${PUSHPLUS_TOKEN}"'","title":"GHA探测","content":"from GHA runner","template":"html"}'
+          curl -sv --max-time 15 https://www.pushplus.plus/send \
+            -X POST \
             -H "Content-Type: application/json" \
-            -d "{\"token\":\"${PUSHPLUS_TOKEN}\",\"title\":\"连通探测\",\"content\":\"from GHA",\"template\":\"html\"}" 2>&1 | head -30
+            -d "${PP_BODY}" 2>&1
           echo ""
           echo "=== 进入 monitor ==="
           python monitor.py
