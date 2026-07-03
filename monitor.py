@@ -187,10 +187,10 @@ def send_telegram(text):
 
 
 def send_wechat(text):
-    """通过 PushPlus 推送到个人微信。
+    """通过 PushPlus 推送到个人微信。最多重试 3 次, 每次输出详细日志。
 
     优先走 relay 中转(GHA 美区 runner 可能直连不上 pushplus.plus),
-    若未配 relay 则直连。HTML 模板, 与 Telegram 共用同一份消息。
+    若未配 relay 则直连。
     """
     if not WX_KEY:
         print("[INFO] 未配置 PushPlus, 跳过微信推送。")
@@ -201,28 +201,40 @@ def send_wechat(text):
         "title": title,
         "content": text,
         "template": "html",
-    })
+    }).encode("utf-8")
 
-    # 优先走 relay 中转(新加坡 → 中国更稳定); 没配 relay 则直连
     if BINANCE_BASE and BINANCE_BASE.startswith("https://"):
         url = BINANCE_BASE + "/pushplus"
         headers = {"Content-Type": "application/json", "User-Agent": "equity-funding-alert/1.0"}
         if RELAY_TOKEN:
             headers["X-Relay-Token"] = RELAY_TOKEN
-        print("[INFO] PushPlus 经 relay 发送...")
+        route = "relay"
     else:
         url = "https://www.pushplus.plus/send"
         headers = {"Content-Type": "application/json"}
-        print("[INFO] PushPlus 直连发送...")
+        route = "直连"
 
-    req = urllib.request.Request(url, data=payload_body.encode("utf-8"), headers=headers)
-    with urllib.request.urlopen(req, timeout=20) as resp:
-        body = json.loads(resp.read().decode("utf-8"))
-    code = body.get("code", -1)
-    if code == 200:
-        print(f"[INFO] PushPlus 发送成功 ({body.get('data','')})")
-    else:
-        print(f"[WARN] PushPlus 返回异常: code={code} msg={body.get('msg','')}")
+    import time
+    last_err = ""
+    for attempt in range(1, 4):
+        try:
+            req = urllib.request.Request(url, data=payload_body, headers=headers)
+            with urllib.request.urlopen(req, timeout=20) as resp:
+                body = json.loads(resp.read().decode("utf-8"))
+            code = body.get("code", -1)
+            if code == 200:
+                print(f"[INFO] PushPlus({route}) 第{attempt}次成功 ({body.get('data','')})")
+                return
+            else:
+                print(f"[WARN] PushPlus({route}) 第{attempt}次 code={code} msg={body.get('msg','')}")
+                last_err = f"code={code} {body.get('msg','')}"
+        except Exception as exc:  # noqa: BLE001
+            print(f"[WARN] PushPlus({route}) 第{attempt}次连接失败: {exc}")
+            last_err = str(exc)
+        if attempt < 3:
+            time.sleep(5)
+
+    print(f"[ERROR] PushPlus 3 次均失败, 已放弃。最后错误: {last_err}")
 
 
 def broadcast(text):
