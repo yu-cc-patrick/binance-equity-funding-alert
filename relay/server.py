@@ -33,7 +33,8 @@ class Handler(BaseHTTPRequestHandler):
         try:
             req = urllib.request.Request(
                 UPSTREAM_BINANCE + self.path,
-                headers={"User-Agent": "relay/1.0"},
+                headers={"User-Agent": "Mozilla/5.0 (compatible; funding-monitor/1.0)",
+                         "Accept": "application/json"},
             )
             with urllib.request.urlopen(req, timeout=20) as r:
                 data = r.read()
