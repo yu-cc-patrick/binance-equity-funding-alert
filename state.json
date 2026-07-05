@@ -120,7 +120,7 @@
     "high": false
   },
   "CSCOUSDT": {
-    "extreme": false,
+    "extreme": true,
     "high": false
   },
   "DELLUSDT": {
@@ -212,7 +212,7 @@
     "high": false
   },
   "JPMUSDT": {
-    "extreme": false,
+    "extreme": true,
     "high": false
   },
   "KLACUSDT": {
@@ -256,7 +256,7 @@
     "high": false
   },
   "MUUSDT": {
-    "extreme": false,
+    "extreme": true,
     "high": false
   },
   "MVLLUSDT": {
