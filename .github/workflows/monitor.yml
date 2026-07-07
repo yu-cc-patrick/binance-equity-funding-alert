@@ -37,15 +37,24 @@ jobs:
           TEST_MSG: ${{ inputs.test_msg }}
         run: python monitor.py
 
+      - name: Check delisting
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          BINANCE_BASE: ${{ secrets.BINANCE_BASE }}
+          RELAY_TOKEN: ${{ secrets.RELAY_TOKEN }}
+          PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
+        run: python check_delisting.py
+
       - name: Persist state
         run: |
-          CHANGED=$(git status --porcelain state.json pending_wx.json 2>/dev/null)
+          CHANGED=$(git status --porcelain state.json pending_wx.json delist_state.json 2>/dev/null)
           if [[ -n "$CHANGED" ]]; then
             git config user.name  "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
-            git add state.json pending_wx.json 2>/dev/null
+            git add state.json pending_wx.json delist_state.json 2>/dev/null
             git commit -m "chore: update equity funding state [skip ci]"
             git push
           else
-            echo "state.json / pending_wx.json 无变化, 跳过提交。"
+            echo "state.json / pending_wx.json / delist_state.json 无变化, 跳过提交。"
           fi

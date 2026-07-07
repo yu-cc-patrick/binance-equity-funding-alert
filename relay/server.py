@@ -17,7 +17,8 @@ UPSTREAM_PUSHPLUS = "https://www.pushplus.plus/send"
 RELAY_TOKEN = os.environ.get("RELAY_TOKEN", "")
 
 COMMON_HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; funding-monitor/1.0)",
-                  "Accept": "application/json"}
+                  "Accept": "application/json, text/plain, */*",
+                  "Accept-Language": "en-US,en;q=0.9"}
 
 
 class Handler(BaseHTTPRequestHandler):
