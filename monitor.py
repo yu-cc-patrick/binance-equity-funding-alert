@@ -31,6 +31,7 @@ EQUITY_TYPES = {"EQUITY"}
 # 状态文件放脚本同目录, 不依赖运行时的工作目录
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 STATE_FILE = os.path.join(SCRIPT_DIR, "state.json")
+PENDING_FILE = os.path.join(SCRIPT_DIR, "pending_wx.json")  # 微信发送失败的积压
 
 # 与 funding-rate-alert 共用的 macOS Keychain 服务名前缀(本机取密钥用)
 KEYCHAIN_PREFIX = "binance-alert/"
@@ -167,6 +168,26 @@ def save_state(state):
         json.dump(state, f, ensure_ascii=False, indent=2, sort_keys=True)
 
 
+def _load_pending():
+    """读取微信发送失败的积压消息列表。"""
+    if not os.path.exists(PENDING_FILE):
+        return []
+    try:
+        with open(PENDING_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except (json.JSONDecodeError, OSError):
+        return []
+
+
+def _save_pending(messages):
+    """保存积压消息(覆盖)。"""
+    if messages:
+        with open(PENDING_FILE, "w", encoding="utf-8") as f:
+            json.dump(messages, f, ensure_ascii=False, indent=2)
+    elif os.path.exists(PENDING_FILE):
+        os.remove(PENDING_FILE)
+
+
 def send_telegram(text):
     if not TG_TOKEN or not TG_CHAT_ID:
         print("[WARN] 未配置 Telegram, 跳过推送:\n" + text)
@@ -187,14 +208,13 @@ def send_telegram(text):
 
 
 def send_wechat(text):
-    """通过 PushPlus 推送到个人微信。最多重试 3 次, 每次输出详细日志。
+    """通过 PushPlus 推送到个人微信。最多重试 3 次, 失败则存入积压队列。
 
-    优先走 relay 中转(GHA 美区 runner 可能直连不上 pushplus.plus),
-    若未配 relay 则直连。
+    返回 True(成功)/False(失败并已积压)。
     """
     if not WX_KEY:
         print("[INFO] 未配置 PushPlus, 跳过微信推送。")
-        return
+        return True  # 没配 key 不算失败, 不积压
     title = text.split("\n")[0][:100]
     payload_body = json.dumps({
         "token": WX_KEY,
@@ -224,7 +244,7 @@ def send_wechat(text):
             code = body.get("code", -1)
             if code == 200:
                 print(f"[INFO] PushPlus({route}) 第{attempt}次成功 ({body.get('data','')})")
-                return
+                return True
             else:
                 print(f"[WARN] PushPlus({route}) 第{attempt}次 code={code} msg={body.get('msg','')}")
                 last_err = f"code={code} {body.get('msg','')}"
@@ -234,7 +254,12 @@ def send_wechat(text):
         if attempt < 3:
             time.sleep(5)
 
-    print(f"[ERROR] PushPlus 3 次均失败, 已放弃。最后错误: {last_err}")
+    # 3 次都不行 → 积压到文件, 下次补发
+    pending = _load_pending()
+    pending.append(text)
+    _save_pending(pending)
+    print(f"[ERROR] PushPlus 3 次均失败, 已积压(共 {len(pending)} 条)。最后错误: {last_err}")
+    return False
 
 
 def broadcast(text):
@@ -291,6 +316,25 @@ def diff_and_alerts(market, prev_state):
     return new_state, alerts
 
 
+def flush_pending_alerts():
+    """重发积压的微信消息。全部成功则清空, 有失败的保留。"""
+    pending = _load_pending()
+    if not pending:
+        return
+    print(f"[INFO] 发现 {len(pending)} 条积压微信消息, 尝试补发...")
+    still_pending = []
+    for i, msg in enumerate(pending, 1):
+        if send_wechat(msg):
+            print(f"[INFO] 积压 #{i} 补发成功")
+        else:
+            still_pending.append(msg)
+    _save_pending(still_pending)
+    if still_pending:
+        print(f"[WARN] {len(still_pending)} 条仍然失败, 保留等待下次补发。")
+    else:
+        print("[INFO] 全部积压消息已补发完毕。")
+
+
 def main():
     # 测试模式:设 TEST_MSG 环境变量则只发一条测试消息并退出
     test_msg = os.environ.get("TEST_MSG", "")
@@ -298,6 +342,9 @@ def main():
         broadcast(test_msg)
         print("[INFO] 测试消息已发送到 Telegram + 微信。")
         return
+
+    # 先补发之前微信发送失败的积压消息
+    flush_pending_alerts()
 
     try:
         market = fetch_market()
@@ -324,9 +371,13 @@ def main():
         print(f"[INFO] 共检查 {len(market)} 个美股标的, 无状态变化。")
         return
 
+    wx_queued = 0
     for msg in alerts:
-        broadcast(msg)
-    print(f"[INFO] 已推送 {len(alerts)} 条预警到 Telegram + 微信。")
+        send_telegram(msg)
+        if not send_wechat(msg):
+            wx_queued += 1
+    wx_note = f"({wx_queued} 条微信已积压)" if wx_queued else ""
+    print(f"[INFO] 已推送 {len(alerts)} 条预警到 Telegram + 微信。{wx_note}")
 
 
 if __name__ == "__main__":
