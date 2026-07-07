@@ -12,8 +12,12 @@ import urllib.request
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 UPSTREAM_BINANCE = "https://fapi.binance.com"
+UPSTREAM_WEB = "https://www.binance.com"         # 公告/网页 API
 UPSTREAM_PUSHPLUS = "https://www.pushplus.plus/send"
 RELAY_TOKEN = os.environ.get("RELAY_TOKEN", "")
+
+COMMON_HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; funding-monitor/1.0)",
+                  "Accept": "application/json"}
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -26,16 +30,17 @@ class Handler(BaseHTTPRequestHandler):
         if RELAY_TOKEN and self.headers.get("X-Relay-Token") != RELAY_TOKEN:
             self._send(403, b'{"error":"forbidden"}')
             return
-        # 只允许转发币安合约只读接口
-        if not self.path.startswith("/fapi/"):
-            self._send(404, b'{"error":"only /fapi/ is allowed"}')
+        # 币安合约接口
+        if self.path.startswith("/fapi/"):
+            upstream = UPSTREAM_BINANCE
+        # 币安网页/公告 API
+        elif self.path.startswith("/bapi/"):
+            upstream = UPSTREAM_WEB
+        else:
+            self._send(404, b'{"error":"only /fapi/ and /bapi/ are allowed"}')
             return
         try:
-            req = urllib.request.Request(
-                UPSTREAM_BINANCE + self.path,
-                headers={"User-Agent": "Mozilla/5.0 (compatible; funding-monitor/1.0)",
-                         "Accept": "application/json"},
-            )
+            req = urllib.request.Request(upstream + self.path, headers=COMMON_HEADERS)
             with urllib.request.urlopen(req, timeout=20) as r:
                 data = r.read()
             self._send(200, data)
