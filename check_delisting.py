@@ -115,38 +115,46 @@ def broadcast(text):
 
 # —— 公告解析 ——
 
-# 我们关注的币种 ticker(不含 USDT 后缀)
-EQUITY_TICKERS = {
-    "AAPL", "MSFT", "GOOGL", "AMZN", "META", "TSLA", "NVDA", "NFLX", "BABA",
-    "AMD", "INTC", "COIN", "MSTR", "SNAP", "UBER", "DIS", "BA", "PYPL",
-    "NKE", "SBUX", "MRNA", "PFE", "JPM", "GS", "V", "MA", "WMT", "COST",
-    "ADBE", "CRM", "ORCL", "CSCO", "QCOM", "TXN", "AVGO", "ARM", "ASML",
-    "PLTR", "SOFI", "RBLX", "U", "NET", "DDOG", "SNOW", "CRWD", "ZS",
-    "PANW", "FTNT", "OKTA", "AI", "GTLB", "PATH", "HOOD", "AFRM", "SOUN",
-    "RIVN", "LCID", "NIO", "XPEV", "LI", "BILI", "JD", "PDD", "TME",
-    # 全量匹配靠 exchangeInfo, 此列表只是第一层关键词兜底;
-    # 更准的过滤在下面 _is_equity_related()
-}
+
+def _get_equity_tickers():
+    """从 exchangeInfo 动态获取当前链上美股 ticker(不含 USDT 后缀)。
+
+    跟 monitor.py 用同一套识别逻辑: underlyingType == EQUITY。
+    """
+    try:
+        info = http_get_json("/fapi/v1/exchangeInfo")
+    except Exception:
+        return set()  # 取不到则跳过(不误报)
+    tickers = set()
+    for s in info.get("symbols", []):
+        if s.get("underlyingType") != "EQUITY":
+            continue
+        if s.get("status") != "TRADING":
+            continue
+        sym = s.get("symbol", "")
+        if sym.endswith("USDT"):
+            # 去掉 USDT 后缀, 得到纯 ticker(如 AAPLUSDT → AAPL)
+            tickers.add(sym[:-4])
+    return tickers
 
 
-def _is_equity_related(title, body):
-    """判断公告是否涉及链上美股(基于标题+正文关键词)。"""
+def _is_equity_related(title, body, equity_tickers):
+    """判断公告是否涉及链上美股(基于真实 EQUITY ticker 精确匹配)。"""
+    # 用 uppercase 的文本, 按词边界匹配 ticker(避免 "AI" 匹配到 "MAIN" 等误报)
     text = (title + " " + body).upper()
 
-    # 1. 直接提到美股 ticker(如 AAPL、MSFT)
-    for t in EQUITY_TICKERS:
-        if t in text:
+    for t in equity_tickers:
+        # ticker 必须是完整单词(前后是空格/标点/字符串边界)
+        if re.search(r'\b' + re.escape(t) + r'\b', text):
             return True
 
-    # 2. 提到"tokenized stock" / "equity" / "stock token" / "TRADIFI"
-    keywords = ["TOKENIZED STOCK", "EQUITY", "STOCK TOKEN", "TRADIFI",
-                "EQUITY PERPETUAL", "STOCK PERPETUAL"]
-    for kw in keywords:
+    # 额外关键词: 明确提到 EQUITY perpetual / tokenized stock
+    extra = ["TOKENIZED STOCK", "STOCK TOKEN", "EQUITY PERPETUAL",
+             "STOCK PERPETUAL", "TRADIFI PERPETUAL"]
+    for kw in extra:
         if kw in text:
             return True
 
-    # 3. 不含任何币种 ticker 的通用公告 → 可能是全平台公告,
-    #    但若不含关键词则跳过
     return False
 
 
@@ -215,6 +223,13 @@ def save_seen(codes):
 
 
 def main():
+    # 先拿到当前链上美股清单(用于精确匹配)
+    equity_tickers = _get_equity_tickers()
+    if not equity_tickers:
+        print("[ERROR] 无法获取链上美股清单, 退出。", file=sys.stderr)
+        sys.exit(1)
+    print(f"[INFO] 当前链上美股: {len(equity_tickers)} 个")
+
     try:
         articles = fetch_delisting_articles()
     except Exception as e:
@@ -238,8 +253,8 @@ def main():
             continue
         new_codes.add(code)
 
-        if not _is_equity_related(title, body):
-            print(f"[INFO] 跳过(非美股相关): {title[:60]}")
+        if not _is_equity_related(title, body, equity_tickers):
+            print(f"[INFO] 跳过(非美股): {title[:60]}")
             continue
 
         # 美股相关的下架公告！
