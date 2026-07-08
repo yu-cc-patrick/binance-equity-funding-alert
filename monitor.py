@@ -92,13 +92,24 @@ TG_CHAT_ID = get_secret("TELEGRAM_CHAT_ID")
 WX_KEY = get_secret("PUSHPLUS_TOKEN")           # PushPlus 推送 Token(个人微信)
 
 
-def http_get_json(url):
+def http_get_json(url, retries=3):
+    """GET + JSON + 自动重试(处理 relay 冷启动 + 币安间歇 502)。"""
+    import time
     headers = {"User-Agent": "equity-funding-alert/1.0"}
     if RELAY_TOKEN:
         headers["X-Relay-Token"] = RELAY_TOKEN
-    req = urllib.request.Request(url, headers=headers)
-    with urllib.request.urlopen(req, timeout=20) as resp:
-        return json.loads(resp.read().decode("utf-8"))
+    last_err = None
+    for attempt in range(1, retries + 1):
+        try:
+            req = urllib.request.Request(url, headers=headers)
+            with urllib.request.urlopen(req, timeout=20) as resp:
+                return json.loads(resp.read().decode("utf-8"))
+        except Exception as exc:  # noqa: BLE001
+            last_err = exc
+            if attempt < retries:
+                print(f"[WARN] {url.split('?')[0].rsplit('/',1)[-1]} 第{attempt}次失败({exc}), {3*attempt}s 后重试...")
+                time.sleep(3 * attempt)
+    raise last_err
 
 
 def fetch_equity_symbols():
