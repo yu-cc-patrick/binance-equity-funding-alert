@@ -92,13 +92,24 @@ TG_CHAT_ID = get_secret("TELEGRAM_CHAT_ID")
 WX_KEY = get_secret("PUSHPLUS_TOKEN")           # PushPlus 推送 Token(个人微信)
 
 
-def http_get_json(url):
+def http_get_json(url, retries=3):
+    """GET + JSON + 自动重试(处理 relay 冷启动 + 币安间歇 502)。"""
+    import time
     headers = {"User-Agent": "equity-funding-alert/1.0"}
     if RELAY_TOKEN:
         headers["X-Relay-Token"] = RELAY_TOKEN
-    req = urllib.request.Request(url, headers=headers)
-    with urllib.request.urlopen(req, timeout=20) as resp:
-        return json.loads(resp.read().decode("utf-8"))
+    last_err = None
+    for attempt in range(1, retries + 1):
+        try:
+            req = urllib.request.Request(url, headers=headers)
+            with urllib.request.urlopen(req, timeout=20) as resp:
+                return json.loads(resp.read().decode("utf-8"))
+        except Exception as exc:  # noqa: BLE001
+            last_err = exc
+            if attempt < retries:
+                print(f"[WARN] {url.split('?')[0].rsplit('/',1)[-1]} 第{attempt}次失败({exc}), {3*attempt}s 后重试...")
+                time.sleep(3 * attempt)
+    raise last_err
 
 
 def fetch_equity_symbols():
@@ -121,12 +132,14 @@ def fetch_equity_symbols():
 
 
 def fetch_market():
-    """返回 {symbol: {"rate": float, "interval": int}}, 只含链上美股永续。"""
+    """返回 {symbol: {"rate": float, "interval": int}}, 只含链上美股永续。
+
+    不再依赖 premiumIndex(币安 418 限流该端点), 改为逐个调 fundingRate。
+    """
+    import time
     equities = fetch_equity_symbols()
-    premium = http_get_json(f"{BINANCE_BASE}/fapi/v1/premiumIndex")
     info = http_get_json(f"{BINANCE_BASE}/fapi/v1/fundingInfo")
 
-    # fundingInfo 只返回被调整过周期的币种, 其余默认 8h
     interval_map = {}
     for item in info:
         try:
@@ -135,21 +148,34 @@ def fetch_market():
             continue
 
     market = {}
-    for item in premium:
-        symbol = item.get("symbol", "")
-        if symbol not in equities:        # 只保留链上美股
+    symbols = sorted(equities)
+    n = len(symbols)
+    fetch_start = time.monotonic()
+
+    for i, sym in enumerate(symbols):
+        try:
+            data = http_get_json(
+                f"{BINANCE_BASE}/fapi/v1/fundingRate?symbol={sym}&limit=1",
+                retries=1,  # 单标的快速失败, 不拖累整体速度
+            )
+        except Exception:
             continue
-        raw = item.get("lastFundingRate")
-        if raw in (None, ""):
+        if not isinstance(data, list) or not data:
             continue
         try:
-            rate = float(raw)
-        except (ValueError, TypeError):
+            rate = float(data[0]["fundingRate"])
+        except (KeyError, ValueError, TypeError):
             continue
-        market[symbol] = {
+        market[sym] = {
             "rate": rate,
-            "interval": interval_map.get(symbol, DEFAULT_INTERVAL_HOURS),
+            "interval": interval_map.get(sym, DEFAULT_INTERVAL_HOURS),
         }
+        # 50ms 间隔避免触发币安限流(每秒最多 20 个)
+        if i < n - 1:
+            time.sleep(0.05)
+
+    elapsed = time.monotonic() - fetch_start
+    print(f"[INFO] 逐标拉取费率完成: {len(market)}/{n} 个标的, 耗时 {elapsed:.0f}s")
     return market
 
 
