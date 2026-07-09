@@ -19,6 +19,7 @@ import os
 import subprocess
 import sys
 import urllib.request
+from datetime import datetime, timezone
 
 RATE_THRESHOLD = 0.01          # 1%
 EXTREME_INTERVAL_HOURS = 1     # 周期降到 1h 视为极端
@@ -117,16 +118,34 @@ def fetch_equity_symbols():
     """从 exchangeInfo 取出全部链上美股永续的 symbol 集合。
 
     拉成功则更新本地缓存(equity_list.json), 拉失败则用缓存兜底。
+    缓存超过 CACHE_STALE_HOURS 小时 + 拉取失败 → 推送告警。
     """
     try:
         info = http_get_json(f"{BINANCE_BASE}/fapi/v1/exchangeInfo", retries=5)
     except Exception as e:
-        print(f"[WARN] exchangeInfo 拉取失败({e}), 尝试读缓存...")
-        cached = _load_equity_cache()
-        if cached:
-            print(f"[INFO] 使用缓存美股清单: {len(cached)} 个标的")
-            return cached
-        raise  # 无缓存则无法继续
+        cached, updated_at = _load_equity_cache()
+        if not cached:
+            raise  # 无缓存则无法继续
+
+        age = ""
+        if updated_at:
+            try:
+                dt = datetime.fromisoformat(updated_at)
+                delta = datetime.now(timezone.utc) - dt
+                hours = delta.total_seconds() / 3600
+                age = f"（已 {hours:.0f} 小时未更新）"
+                if hours > CACHE_STALE_HOURS:
+                    send_telegram(
+                        f"⚠️ <b>美股清单缓存过期</b>\n"
+                        f"exchangeInfo 连续拉取失败, 缓存 {len(cached)} 个标的{age}。\n"
+                        f"新上市的美股可能被遗漏, relay 恢复后自动更新。\n"
+                        f"最后错误: {e}"
+                    )
+            except (ValueError, TypeError):
+                pass
+
+        print(f"[INFO] 使用缓存美股清单: {len(cached)} 个标的{age}")
+        return cached
 
     symbols = set()
     for s in info.get("symbols", []):
@@ -138,24 +157,38 @@ def fetch_equity_symbols():
         if sym.endswith("USDT"):
             symbols.add(sym)
 
-    # 更新缓存
     _save_equity_cache(symbols)
     return symbols
 
 
+CACHE_STALE_HOURS = 24  # 缓存超过此小时数且拉不到新的时告警
+
+
 def _load_equity_cache():
+    """返回 (symbols_set, updated_at_iso_or_None)。
+
+    兼容旧格式(纯数组)和新格式({"symbols": [...], "updated_at": "..."})。
+    """
     if not os.path.exists(EQUITY_CACHE):
-        return set()
+        return set(), None
     try:
         with open(EQUITY_CACHE, "r") as f:
-            return set(json.load(f))
+            data = json.load(f)
     except (json.JSONDecodeError, OSError):
-        return set()
+        return set(), None
+    # 新格式
+    if isinstance(data, dict):
+        return set(data.get("symbols", [])), data.get("updated_at")
+    # 旧格式(纯列表)
+    return set(data), None
 
 
 def _save_equity_cache(symbols):
     with open(EQUITY_CACHE, "w") as f:
-        json.dump(sorted(symbols), f)
+        json.dump({
+            "symbols": sorted(symbols),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+        }, f, ensure_ascii=False)
 
 
 def fetch_market():
