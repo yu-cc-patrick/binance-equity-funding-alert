@@ -48,11 +48,11 @@ jobs:
 
       - name: Persist state
         run: |
-          CHANGED=$(git status --porcelain state.json pending_wx.json delist_state.json 2>/dev/null)
+          CHANGED=$(git status --porcelain state.json pending_wx.json delist_state.json equity_list.json 2>/dev/null)
           if [[ -n "$CHANGED" ]]; then
             git config user.name  "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
-            git add state.json pending_wx.json delist_state.json 2>/dev/null
+            git add state.json pending_wx.json delist_state.json equity_list.json 2>/dev/null
             git commit -m "chore: update equity funding state [skip ci]"
             git push
           else

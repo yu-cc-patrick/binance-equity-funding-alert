@@ -31,7 +31,8 @@ EQUITY_TYPES = {"EQUITY"}
 # 状态文件放脚本同目录, 不依赖运行时的工作目录
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 STATE_FILE = os.path.join(SCRIPT_DIR, "state.json")
-PENDING_FILE = os.path.join(SCRIPT_DIR, "pending_wx.json")  # 微信发送失败的积压
+PENDING_FILE = os.path.join(SCRIPT_DIR, "pending_wx.json")
+EQUITY_CACHE = os.path.join(SCRIPT_DIR, "equity_list.json")  # 美股清单缓存(防 exchangeInfo 间歇502)
 
 # 与 funding-rate-alert 共用的 macOS Keychain 服务名前缀(本机取密钥用)
 KEYCHAIN_PREFIX = "binance-alert/"
@@ -115,10 +116,18 @@ def http_get_json(url, retries=3):
 def fetch_equity_symbols():
     """从 exchangeInfo 取出全部链上美股永续的 symbol 集合。
 
-    依据 underlyingType in EQUITY_TYPES 自动识别(AAPLUSDT 等标为 EQUITY),
-    新上市标的自动纳入。只保留正在交易(TRADING)的 USDT 永续。
+    拉成功则更新本地缓存(equity_list.json), 拉失败则用缓存兜底。
     """
-    info = http_get_json(f"{BINANCE_BASE}/fapi/v1/exchangeInfo")
+    try:
+        info = http_get_json(f"{BINANCE_BASE}/fapi/v1/exchangeInfo", retries=5)
+    except Exception as e:
+        print(f"[WARN] exchangeInfo 拉取失败({e}), 尝试读缓存...")
+        cached = _load_equity_cache()
+        if cached:
+            print(f"[INFO] 使用缓存美股清单: {len(cached)} 个标的")
+            return cached
+        raise  # 无缓存则无法继续
+
     symbols = set()
     for s in info.get("symbols", []):
         if s.get("underlyingType") not in EQUITY_TYPES:
@@ -128,7 +137,25 @@ def fetch_equity_symbols():
         sym = s.get("symbol", "")
         if sym.endswith("USDT"):
             symbols.add(sym)
+
+    # 更新缓存
+    _save_equity_cache(symbols)
     return symbols
+
+
+def _load_equity_cache():
+    if not os.path.exists(EQUITY_CACHE):
+        return set()
+    try:
+        with open(EQUITY_CACHE, "r") as f:
+            return set(json.load(f))
+    except (json.JSONDecodeError, OSError):
+        return set()
+
+
+def _save_equity_cache(symbols):
+    with open(EQUITY_CACHE, "w") as f:
+        json.dump(sorted(symbols), f)
 
 
 def fetch_market():
