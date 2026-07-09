@@ -35,7 +35,14 @@ jobs:
           RELAY_TOKEN: ${{ secrets.RELAY_TOKEN }}
           PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
           TEST_MSG: ${{ inputs.test_msg }}
-        run: python monitor.py
+        run: |
+          echo "=== DIAG: test each API endpoint ==="
+          for ep in exchangeInfo fundingInfo "fundingRate?symbol=AAPLUSDT&limit=1"; do
+            code=$(curl -s --max-time 15 -o /dev/null -w "%{http_code}" -H "X-Relay-Token: ${RELAY_TOKEN}" "${BINANCE_BASE}/fapi/v1/${ep}" 2>/dev/null || echo "fail")
+            echo "  /fapi/v1/${ep} -> HTTP ${code}"
+          done
+          echo "=== DIAG done, running monitor ==="
+          python monitor.py
 
       - name: Check delisting
         env:
