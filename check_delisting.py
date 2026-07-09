@@ -126,12 +126,14 @@ def _get_equity_tickers():
         try:
             with open(cache_file, "r") as f:
                 cached = json.load(f)
-            # 格式: ["AAPLUSDT", "MSFTUSDT", ...], 去掉 USDT 后缀
-            tickers = {s[:-4] for s in cached if s.endswith("USDT")}
+        except (json.JSONDecodeError, OSError):
+            cached = None
+        if cached:
+            # 兼容新格式({"symbols":[...],"updated_at":"..."}) 和旧格式(纯数组)
+            symbols = cached if isinstance(cached, list) else cached.get("symbols", [])
+            tickers = {s[:-4] for s in symbols if s.endswith("USDT")}
             if tickers:
                 return tickers
-        except (json.JSONDecodeError, OSError):
-            pass
 
     # 2. 无缓存时实时拉取
     try:
