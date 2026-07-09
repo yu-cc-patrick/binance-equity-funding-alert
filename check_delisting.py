@@ -117,14 +117,28 @@ def broadcast(text):
 
 
 def _get_equity_tickers():
-    """从 exchangeInfo 动态获取当前链上美股 ticker(不含 USDT 后缀)。
-
-    跟 monitor.py 用同一套识别逻辑: underlyingType == EQUITY。
+    """获取当前链上美股 ticker。优先从 monitor 缓存的 equity_list.json
+    读(免去 exchangeInfo 调用), 缓存不存在时才实时拉 exchangeInfo。
     """
+    # 1. 先读 monitor.py 已经拉好并提交到仓库的缓存
+    cache_file = os.path.join(SCRIPT_DIR, "equity_list.json")
+    if os.path.exists(cache_file):
+        try:
+            with open(cache_file, "r") as f:
+                cached = json.load(f)
+            # 格式: ["AAPLUSDT", "MSFTUSDT", ...], 去掉 USDT 后缀
+            tickers = {s[:-4] for s in cached if s.endswith("USDT")}
+            if tickers:
+                return tickers
+        except (json.JSONDecodeError, OSError):
+            pass
+
+    # 2. 无缓存时实时拉取
     try:
         info = http_get_json("/fapi/v1/exchangeInfo")
-    except Exception:
-        return set()  # 取不到则跳过(不误报)
+    except Exception as e:
+        print(f"[WARN] exchangeInfo 拉取失败且无缓存: {e}")
+        return set()
     tickers = set()
     for s in info.get("symbols", []):
         if s.get("underlyingType") != "EQUITY":
@@ -133,7 +147,6 @@ def _get_equity_tickers():
             continue
         sym = s.get("symbol", "")
         if sym.endswith("USDT"):
-            # 去掉 USDT 后缀, 得到纯 ticker(如 AAPLUSDT → AAPL)
             tickers.add(sym[:-4])
     return tickers
 
