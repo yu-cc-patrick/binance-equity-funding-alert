@@ -239,6 +239,28 @@ def fetch_market():
     return market
 
 
+def fetch_btc_rate():
+    """获取 BTCUSDT 当前资金费率, 用于判断美股异动是否独立于加密大盘。
+
+    取不到返回 None — 不影响主流程, 仅跳过独立/联动标记。
+    """
+    try:
+        data = http_get_json(
+            f"{BINANCE_BASE}/fapi/v1/fundingRate?symbol=BTCUSDT&limit=1",
+            retries=2,
+        )
+        if isinstance(data, list) and data:
+            return float(data[0]["fundingRate"])
+    except Exception:
+        pass
+    return None
+
+
+def is_weekend():
+    """UTC 时间的周六/周日返回 True。"""
+    return datetime.now(timezone.utc).weekday() >= 5
+
+
 def load_state():
     if not os.path.exists(STATE_FILE):
         return {}
@@ -358,10 +380,16 @@ def pct(rate):
     return f"{rate * 100:+.4f}%"
 
 
-def diff_and_alerts(market, prev_state):
-    """对比新旧状态, 返回 (新状态, 预警消息列表)。"""
+def diff_and_alerts(market, prev_state, btc_rate=None):
+    """对比新旧状态, 返回 (新状态, 预警消息列表)。
+
+    btc_rate: BTCUSDT 当前资金费率(None=取不到, 跳过独立/联动标记)。
+    状态新增 high_duration / extreme_duration 两个计数器, 记录连续触发次数。
+    """
     new_state = {}
     alerts = []
+    weekend = is_weekend()
+    btc_is_high = btc_rate is not None and abs(btc_rate) > RATE_THRESHOLD
 
     for symbol, data in market.items():
         rate = data["rate"]
@@ -369,33 +397,62 @@ def diff_and_alerts(market, prev_state):
         is_extreme = interval <= EXTREME_INTERVAL_HOURS
         is_high = abs(rate) > RATE_THRESHOLD
 
-        new_state[symbol] = {"extreme": is_extreme, "high": is_high}
         old = prev_state.get(symbol, {})
         old_extreme = old.get("extreme", False)
         old_high = old.get("high", False)
 
+        # ── 持续时间 ──
+        high_dur = old.get("high_duration", 0) + 1 if is_high else 0
+        extreme_dur = old.get("extreme_duration", 0) + 1 if is_extreme else 0
+
+        new_state[symbol] = {
+            "extreme": is_extreme,
+            "high": is_high,
+            "high_duration": high_dur,
+            "extreme_duration": extreme_dur,
+        }
+
+        # ── 上下文标签 ──
+        tags = []
+        if weekend:
+            tags.append("WEEKEND")
+        if is_high and btc_rate is not None:
+            # 同向极端 → 加密联动; BTC 正常 → 独立异动
+            if btc_is_high and (rate * btc_rate > 0):
+                tags.append("加密联动")
+            elif not btc_is_high:
+                tags.append("独立异动")
+
+        tag_str = f"[{'|'.join(tags)}] " if tags else ""
+
         # 1) 结算周期: 正常 -> 极端
         if is_extreme and not old_extreme:
+            dur_str = f" 首次触发" if extreme_dur == 1 else f" 已持续{extreme_dur}周期"
             alerts.append(
-                f"⚠️ <b>{symbol}</b> 进入极端状态\n"
-                f"结算周期降至 <b>{interval}h</b>(当前费率 {pct(rate)})"
+                f"{tag_str}⚠️ <b>{symbol}</b> 进入极端状态\n"
+                f"结算周期降至 <b>{interval}h</b>(当前费率 {pct(rate)}){dur_str}"
             )
         # 周期: 极端 -> 恢复
         elif not is_extreme and old_extreme:
+            prev_dur = old.get("extreme_duration", 0)
+            dur_str = f"(持续了{prev_dur}个周期后恢复)" if prev_dur > 1 else ""
             alerts.append(
-                f"✅ <b>{symbol}</b> 恢复正常\n"
+                f"✅ <b>{symbol}</b> 恢复正常 {dur_str}\n"
                 f"结算周期回到 <b>{interval}h</b>(当前费率 {pct(rate)})"
             )
 
         # 2) 费率绝对值跨越 1% 阈值
         if is_high and not old_high:
+            dur_str = f" 首次触发" if high_dur == 1 else f" 已持续{high_dur}周期"
             alerts.append(
-                f"🔥 <b>{symbol}</b> 资金费率异常\n"
-                f"当前 <b>{pct(rate)}</b> 超过 ±1%(周期 {interval}h)"
+                f"{tag_str}🔥 <b>{symbol}</b> 资金费率异常\n"
+                f"当前 <b>{pct(rate)}</b> 超过 ±1%(周期 {interval}h){dur_str}"
             )
         elif not is_high and old_high:
+            prev_dur = old.get("high_duration", 0)
+            dur_str = f"(持续了{prev_dur}个周期后回落)" if prev_dur > 1 else ""
             alerts.append(
-                f"🟢 <b>{symbol}</b> 费率回落\n"
+                f"🟢 <b>{symbol}</b> 费率回落 {dur_str}\n"
                 f"当前 <b>{pct(rate)}</b> 已回到 ±1% 以内"
             )
 
@@ -442,10 +499,16 @@ def main():
         print("[ERROR] 未取到任何链上美股行情, 退出", file=sys.stderr)
         sys.exit(1)
 
+    btc_rate = fetch_btc_rate()
+    if btc_rate is not None:
+        print(f"[INFO] BTCUSDT 资金费率: {pct(btc_rate)}")
+    else:
+        print("[WARN] BTCUSDT 费率获取失败, 跳过独立/联动标记。")
+
     prev_state = load_state()
     first_run = not prev_state
 
-    new_state, alerts = diff_and_alerts(market, prev_state)
+    new_state, alerts = diff_and_alerts(market, prev_state, btc_rate)
     save_state(new_state)
 
     if first_run:
