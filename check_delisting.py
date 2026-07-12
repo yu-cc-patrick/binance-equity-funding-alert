@@ -288,6 +288,7 @@ def main():
 
         msg = (
             f"🚨 {token_str} 预计 {delist_date} 下架{products}\n"
+            f"如有长持小市值仓位请及时平仓\n"
             f"详情: https://www.binance.com/en/support/announcement/{code}"
         )
         alerts.append(msg)
