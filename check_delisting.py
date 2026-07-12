@@ -173,36 +173,44 @@ def _is_equity_related(title, body, equity_tickers):
     return False
 
 
-def _parse_delist_time(title, body):
-    """从公告文本里粗提下架时间。Binance 格式通常:
-    'at 2025-XX-XX XX:XX (UTC)' 或 'on 2025-XX-XX'
-    """
+def _extract_equity_tokens(title, equity_tickers):
+    """从公告标题中找出涉及的美股 ticker(纯大写 2-5 字母)。"""
+    text = title.upper()
+    found = []
+    for t in sorted(equity_tickers, key=lambda x: -len(x)):  # 长 ticker 优先匹配
+        if re.search(r'\b' + re.escape(t) + r'\b', text):
+            found.append(t)
+    return found
+
+
+def _parse_delist_date(title, body):
+    """从公告文本里提取下架日期, 优先 2026-01-01 格式, 次选完整时间。"""
     text = title + "\n" + body
-    patterns = [
-        r"at (\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2})\s*\(?UTC\)?",
-        r"on (\d{4}-\d{2}-\d{2}\s+at\s+\d{2}:\d{2})",
-        r"(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2})\s*\(?UTC\)?",
-    ]
-    for pat in patterns:
-        m = re.search(pat, text)
-        if m:
-            return m.group(1) + " UTC"
-    return "(未识别具体时间, 请查看公告全文)"
+    # 优先找完整时间戳
+    m = re.search(r"(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2})\s*\(?UTC\)?", text)
+    if m:
+        return m.group(1) + " UTC"
+    # 日期兜底
+    m = re.search(r"(\d{4}-\d{2}-\d{2})", text)
+    if m:
+        # 试着在后面或附近找时间
+        return m.group(1)
+    return "?"
 
 
-def _extract_products(body):
+def _extract_products(title, body):
     """提取涉及的产品线: 现货/合约/杠杆..."""
-    products = []
-    text = body.upper()
-    if any(w in text for w in ["SPOT", "现货"]):
-        products.append("现货")
+    text = (title + " " + body).upper()
+    prods = []
     if any(w in text for w in ["FUTURES", "PERPETUAL", "合约", "永续", "USDⓈ-M", "COIN-M"]):
-        products.append("合约")
+        prods.append("合约")
+    if any(w in text for w in ["SPOT", "现货"]):
+        prods.append("现货")
     if any(w in text for w in ["MARGIN", "杠杆", "全仓", "逐仓"]):
-        products.append("杠杆")
+        prods.append("杠杆")
     if any(w in text for w in ["EARN", "理财", "SIMPLE EARN"]):
-        products.append("理财")
-    return "、".join(products) if products else "现货/合约"
+        prods.append("理财")
+    return "、".join(prods) if prods else "现货/合约"
 
 
 # —— 主逻辑 ——
@@ -273,18 +281,17 @@ def main():
             continue
 
         # 美股相关的下架公告！
-        delist_time = _parse_delist_time(title, body)
-        products = _extract_products(body)
+        tokens = _extract_equity_tokens(title, equity_tickers)
+        token_str = "、".join(tokens) if tokens else title[:60]
+        delist_date = _parse_delist_date(title, body)
+        products = _extract_products(title, body)
 
         msg = (
-            f"🚨 <b>币安下架公告</b>\n"
-            f"标的: <b>{title[:120]}</b>\n"
-            f"涉及产品: {products}\n"
-            f"预计下架时间: {delist_time}\n"
+            f"🚨 {token_str} 预计 {delist_date} 下架{products}\n"
             f"详情: https://www.binance.com/en/support/announcement/{code}"
         )
         alerts.append(msg)
-        print(f"[ALERT] 美股下架: {title[:80]}")
+        print(f"[ALERT] {token_str} → {delist_date} {products}")
 
     # 保存已见过的 code
     if new_codes:
