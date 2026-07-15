@@ -42,7 +42,7 @@ class Handler(BaseHTTPRequestHandler):
             return
         try:
             req = urllib.request.Request(upstream + self.path, headers=COMMON_HEADERS)
-            with urllib.request.urlopen(req, timeout=20) as r:
+            with urllib.request.urlopen(req, timeout=60) as r:
                 data = r.read()
             self._send(200, data)
         except Exception as exc:  # noqa: BLE001
