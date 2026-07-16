@@ -35,7 +35,12 @@ jobs:
           RELAY_TOKEN: ${{ secrets.RELAY_TOKEN }}
           PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
           TEST_MSG: ${{ inputs.test_msg }}
-        run: python monitor.py
+        run: |
+          echo "=== GHA network probe ==="
+          curl -s --max-time 10 -o /dev/null -w "Telegram HTTP %{http_code}\n" "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getMe" || echo "Telegram unreachable"
+          curl -s --max-time 10 -o /dev/null -w "relay HTTP %{http_code}\n" "${BINANCE_BASE}/health" || echo "relay unreachable"
+          echo "=== run monitor ==="
+          python monitor.py
 
       - name: Check delisting
         env:

@@ -1,422 +1,704 @@
 {
   "AAOIUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "AAPLUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "ADBEUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "ALABUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "AMATUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "AMDUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "AMZNUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
+  },
+  "APPUSDT": {
+    "extreme": false,
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "ARMUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "ASMLUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "ASTSUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "AVGOUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "AXTIUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "BABAUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "BBXUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "BEUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "BMNRUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
+  },
+  "BNCUSDT": {
+    "extreme": false,
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
+  },
+  "BOTUSDT": {
+    "extreme": false,
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "BRKBUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "BSPUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "BXUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "CATUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "CBRSUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "CIENUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "COHRUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "COINUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "COSTUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "CRCLUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "CRDOUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "CRMUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "CRWDUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "CRWVUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "CSCOUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "DELLUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "DISUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "DKNGUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "DRAMUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "EBAYUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "EWJUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "EWTUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "EWYUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "EWZUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "FLEXUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "FLNCUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
+  },
+  "FWDIUSDT": {
+    "extreme": false,
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
+  },
+  "GEVUSDT": {
+    "extreme": false,
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "GLWUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "GMEUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "GOOGLUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "HDUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "HIMSUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "HOODUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "HPEUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "IBMUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "INTCUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
+  },
+  "INTWUSDT": {
+    "extreme": false,
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "IRENUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "IWMUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "JPMUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "KLACUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "KORUUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "KSTRUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "LITEUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "LLYUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "LRCXUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "METAUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "MRVLUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "MSFTUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "MSTRUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "MUUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "MVLLUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "NBISUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "NFLXUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "NOKUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "NOWUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "NVDAUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "NVOUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "ONDSUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "ORCLUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "PAYPUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "PLTRUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "QCOMUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "QNTXUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "QQQUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "RIVNUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "RKLBUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
+  },
+  "SKHYUSDT": {
+    "extreme": false,
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "SMCIUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "SNDKUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
+  },
+  "SNOWUSDT": {
+    "extreme": false,
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
+  },
+  "SNXXUSDT": {
+    "extreme": false,
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "SONYUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "SOXLUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "SPCXUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "SPYUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "SQQQUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "STRCUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "STXXUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "TERUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "TQQQUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "TSLAUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "TSMUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "TTWOUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "TXNUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "UBERUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "URNMUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "USARUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "UVXYUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
+  },
+  "VRTUSDT": {
+    "extreme": false,
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "VUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "WDCUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
+  },
+  "WENUSDT": {
+    "extreme": false,
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "WMTUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
+  },
+  "XBIUSDT": {
+    "extreme": false,
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "XLEUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   },
   "ZMUSDT": {
     "extreme": false,
-    "high": false
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
   }
 }
