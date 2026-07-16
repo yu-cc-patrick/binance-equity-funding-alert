@@ -484,7 +484,6 @@ def flush_pending_alerts():
 def main():
     # 测试模式:设 TEST_MSG 环境变量则只发一条测试消息并退出
     test_msg = os.environ.get("TEST_MSG", "")
-    print(f"[DEBUG] main() 入口, test_msg={'set' if test_msg else 'unset'}, TG={'set' if TG_TOKEN else 'unset'}, PP={'set' if WX_KEY else 'unset'}")
     if test_msg:
         broadcast(test_msg)
         print("[INFO] 测试消息已发送到 Telegram + 微信。")
@@ -534,5 +533,4 @@ def main():
 
 
 if __name__ == "__main__":
-    print("[DEBUG] monitor 启动, Python=" + sys.version.split()[0])
     main()

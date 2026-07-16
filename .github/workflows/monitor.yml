@@ -35,15 +35,7 @@ jobs:
           RELAY_TOKEN: ${{ secrets.RELAY_TOKEN }}
           PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
           TEST_MSG: ${{ inputs.test_msg }}
-        run: |
-          set +e  # 不让崩溃阻止诊断
-          echo "=== GHA network probe ===" > diag.txt
-          curl -s --max-time 10 -o /dev/null -w "Telegram HTTP %{http_code}\n" "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getMe" >> diag.txt 2>&1 || echo "TG unreachable" >> diag.txt
-          curl -s --max-time 10 -o /dev/null -w "relay HTTP %{http_code}\n" "${BINANCE_BASE}/health" >> diag.txt 2>&1 || echo "relay unreachable" >> diag.txt
-          echo "=== run monitor ===" >> diag.txt
-          python monitor.py >> diag.txt 2>&1; echo "EXIT=$?" >> diag.txt
-          # 直接提交 diag.txt，不依赖后续 persist 步骤
-          git config user.name "diag-bot" && git config user.email "diag@bot" && git add diag.txt && git commit -m "diag [skip ci]" && git push || true
+        run: python monitor.py
 
       - name: Check delisting
         env:
@@ -65,11 +57,11 @@ jobs:
 
       - name: Persist state
         run: |
-          CHANGED=$(git status --porcelain state.json pending_wx.json delist_state.json equity_list.json scanner_state.json diag.txt 2>/dev/null)
+          CHANGED=$(git status --porcelain state.json pending_wx.json delist_state.json equity_list.json scanner_state.json 2>/dev/null)
           if [[ -n "$CHANGED" ]]; then
             git config user.name  "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
-            git add state.json pending_wx.json delist_state.json equity_list.json scanner_state.json diag.txt 2>/dev/null
+            git add state.json pending_wx.json delist_state.json equity_list.json scanner_state.json 2>/dev/null
             git commit -m "chore: update equity funding state [skip ci]"
             git push
           else
