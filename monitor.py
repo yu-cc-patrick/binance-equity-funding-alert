@@ -216,7 +216,7 @@ def fetch_market():
         try:
             data = http_get_json(
                 f"{BINANCE_BASE}/fapi/v1/fundingRate?symbol={sym}&limit=1",
-                retries=1,  # 单标的快速失败, 不拖累整体速度
+                retries=2,  # 一次重试, relay 冷启动时有 3s 缓冲
             )
         except Exception:
             continue
