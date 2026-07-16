@@ -36,11 +36,11 @@ jobs:
           PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
           TEST_MSG: ${{ inputs.test_msg }}
         run: |
-          echo "=== GHA network probe ==="
-          curl -s --max-time 10 -o /dev/null -w "Telegram HTTP %{http_code}\n" "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getMe" || echo "Telegram unreachable"
-          curl -s --max-time 10 -o /dev/null -w "relay HTTP %{http_code}\n" "${BINANCE_BASE}/health" || echo "relay unreachable"
-          echo "=== run monitor ==="
-          python monitor.py
+          echo "=== GHA network probe ===" > diag.txt
+          curl -s --max-time 10 -o /dev/null -w "Telegram HTTP %{http_code}\n" "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getMe" >> diag.txt 2>&1 || echo "Telegram unreachable" >> diag.txt
+          curl -s --max-time 10 -o /dev/null -w "relay HTTP %{http_code}\n" "${BINANCE_BASE}/health" >> diag.txt 2>&1 || echo "relay unreachable" >> diag.txt
+          echo "=== run monitor ===" >> diag.txt
+          python monitor.py >> diag.txt 2>&1; echo "EXIT=$?" >> diag.txt
 
       - name: Check delisting
         env:
@@ -62,11 +62,11 @@ jobs:
 
       - name: Persist state
         run: |
-          CHANGED=$(git status --porcelain state.json pending_wx.json delist_state.json equity_list.json scanner_state.json 2>/dev/null)
+          CHANGED=$(git status --porcelain state.json pending_wx.json delist_state.json equity_list.json scanner_state.json diag.txt 2>/dev/null)
           if [[ -n "$CHANGED" ]]; then
             git config user.name  "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
-            git add state.json pending_wx.json delist_state.json equity_list.json scanner_state.json 2>/dev/null
+            git add state.json pending_wx.json delist_state.json equity_list.json scanner_state.json diag.txt 2>/dev/null
             git commit -m "chore: update equity funding state [skip ci]"
             git push
           else
