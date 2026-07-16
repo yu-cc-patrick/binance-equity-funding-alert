@@ -1,0 +1,9 @@
+=== GHA network probe ===
+Telegram HTTP 200
+relay HTTP 200
+=== run monitor ===
+[DEBUG] monitor 启动, Python=3.12.13
+[DEBUG] main() 入口, test_msg=set, TG=set, PP=set
+[INFO] PushPlus(relay) 第1次成功 (27e9521c54fc490b83cba39b03f45d51)
+[INFO] 测试消息已发送到 Telegram + 微信。
+EXIT=0
