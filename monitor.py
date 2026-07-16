@@ -311,8 +311,11 @@ def send_telegram(text):
         url, data=payload,
         headers={"Content-Type": "application/json"},
     )
-    with urllib.request.urlopen(req, timeout=20) as resp:
-        resp.read()
+    try:
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            resp.read()
+    except Exception as e:
+        print(f"[WARN] Telegram 发送失败: {e}")
 
 
 def send_wechat(text):
