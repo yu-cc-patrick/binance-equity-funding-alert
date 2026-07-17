@@ -512,15 +512,43 @@ def main():
     first_run = not prev_state
 
     new_state, alerts = diff_and_alerts(market, prev_state, btc_rate)
+
+    # ── 心跳: 每 6 小时发一次存活确认(仅在无告警时) ──
+    HEARTBEAT_HOURS = 6
+    now = datetime.now(timezone.utc)
+    last_hb_str = prev_state.get("_heartbeat", "")
+    need_heartbeat = True
+    if last_hb_str:
+        try:
+            last_hb = datetime.fromisoformat(last_hb_str)
+            if (now - last_hb).total_seconds() / 3600 < HEARTBEAT_HOURS:
+                need_heartbeat = False
+        except (ValueError, TypeError):
+            pass
+
+    if not alerts and need_heartbeat:
+        try:
+            n = len(market)
+            send_telegram(
+                f"💚 <b>系统存活</b>\n"
+                f"{n} 个美股标的监控中, 近 {HEARTBEAT_HOURS} 小时无触警。\n"
+                f"BTC 费率: {pct(btc_rate) if btc_rate else '—'} | "
+                f"更新时间: {now.strftime('%m-%d %H:%M')} UTC"
+            )
+        except Exception:
+            pass  # 心跳失败不崩 pipeline
+
+    new_state["_heartbeat"] = now.isoformat()
     save_state(new_state)
 
     if first_run:
-        # 首次运行只建立基线, 不把存量极端币种全推一遍刷屏
-        print(f"[INFO] 首次运行, 已建立 {len(new_state)} 个美股标的基线, 不推送。")
+        print(f"[INFO] 首次运行, 已建立 {len(market)} 个美股标的基线, 不推送。")
         return
 
     if not alerts:
         print(f"[INFO] 共检查 {len(market)} 个美股标的, 无状态变化。")
+        if not need_heartbeat:
+            print("[INFO] 心跳跳过(未到间隔)。")
         return
 
     wx_queued = 0
