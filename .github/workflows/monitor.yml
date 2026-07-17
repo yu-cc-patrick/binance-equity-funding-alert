@@ -35,7 +35,14 @@ jobs:
           RELAY_TOKEN: ${{ secrets.RELAY_TOKEN }}
           PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
           TEST_MSG: ${{ inputs.test_msg }}
-        run: python monitor.py
+        run: |
+          set +e; echo "=== schedule diag ===" > diag2.txt; date >> diag2.txt
+          curl -s --max-time 10 -o /dev/null -w "%{http_code}" "${BINANCE_BASE}/fapi/v1/exchangeInfo" >> diag2.txt; echo " exchangeInfo" >> diag2.txt
+          curl -s --max-time 10 -o /dev/null -w "%{http_code}" "${BINANCE_BASE}/fapi/v1/fundingInfo" >> diag2.txt; echo " fundingInfo" >> diag2.txt
+          curl -s --max-time 10 -o /dev/null -w "%{http_code}" "${BINANCE_BASE}/fapi/v1/fundingRate?symbol=AAPLUSDT&limit=1" >> diag2.txt; echo " fundingRate" >> diag2.txt
+          echo "--- monitor ---" >> diag2.txt
+          python monitor.py >> diag2.txt 2>&1; echo "EXIT=$?" >> diag2.txt
+          git config user.name diag && git config user.email diag@bot && git add diag2.txt && git commit -m "diag2 [skip ci]" && git push || true
 
       - name: Check delisting
         env:
