@@ -1,10 +1,10 @@
 === schedule diag ===
-Fri Jul 17 06:26:08 UTC 2026
-403 exchangeInfo
-403 fundingInfo
+Fri Jul 17 08:32:02 UTC 2026
+000 exchangeInfo
+000 fundingInfo
 403 fundingRate
 --- monitor ---
-[INFO] 逐标拉取费率完成: 120/120 个标的, 耗时 49s
-[INFO] BTCUSDT 资金费率: +0.0076%
+[INFO] 逐标拉取费率完成: 120/120 个标的, 耗时 43s
+[INFO] BTCUSDT 资金费率: +0.0015%
 [INFO] 共检查 120 个美股标的, 无状态变化。
 EXIT=0
