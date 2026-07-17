@@ -35,7 +35,7 @@ jobs:
           RELAY_TOKEN: ${{ secrets.RELAY_TOKEN }}
           PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
           TEST_MSG: ${{ inputs.test_msg }}
-run: python monitor.py
+        run: python monitor.py
 
       - name: Check delisting
         env:
