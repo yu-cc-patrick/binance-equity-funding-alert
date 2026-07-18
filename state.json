@@ -272,8 +272,8 @@
   "FWDIUSDT": {
     "extreme": false,
     "extreme_duration": 0,
-    "high": false,
-    "high_duration": 0
+    "high": true,
+    "high_duration": 1
   },
   "GEVUSDT": {
     "extreme": false,
@@ -425,6 +425,12 @@
     "high": false,
     "high_duration": 0
   },
+  "MUUUSDT": {
+    "extreme": false,
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
+  },
   "MVLLUSDT": {
     "extreme": false,
     "extreme_duration": 0,
@@ -563,6 +569,12 @@
     "high": false,
     "high_duration": 0
   },
+  "SOXSUSDT": {
+    "extreme": false,
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
+  },
   "SPCXUSDT": {
     "extreme": false,
     "extreme_duration": 0,
@@ -624,6 +636,12 @@
     "high_duration": 0
   },
   "TXNUSDT": {
+    "extreme": false,
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
+  },
+  "TZAUSDT": {
     "extreme": false,
     "extreme_duration": 0,
     "high": false,
@@ -700,5 +718,6 @@
     "extreme_duration": 0,
     "high": false,
     "high_duration": 0
-  }
+  },
+  "_heartbeat": "2026-07-18T22:12:37.706608+00:00"
 }
