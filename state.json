@@ -133,7 +133,7 @@
   },
   "CATUSDT": {
     "extreme": true,
-    "extreme_duration": 1,
+    "extreme_duration": 2,
     "high": false,
     "high_duration": 0
   },
@@ -719,5 +719,5 @@
     "high": false,
     "high_duration": 0
   },
-  "_heartbeat": "2026-07-19T22:28:45.540244+00:00"
+  "_heartbeat": "2026-07-19T23:32:46.871445+00:00"
 }
