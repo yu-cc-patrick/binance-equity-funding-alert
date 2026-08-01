@@ -95,6 +95,12 @@
     "high": false,
     "high_duration": 0
   },
+  "BITOUSDT": {
+    "extreme": false,
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
+  },
   "BMNRUSDT": {
     "extreme": false,
     "extreme_duration": 0,
@@ -132,8 +138,8 @@
     "high_duration": 0
   },
   "CATUSDT": {
-    "extreme": true,
-    "extreme_duration": 2,
+    "extreme": false,
+    "extreme_duration": 0,
     "high": false,
     "high_duration": 0
   },
@@ -294,6 +300,12 @@
     "high_duration": 0
   },
   "GOOGLUSDT": {
+    "extreme": false,
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
+  },
+  "GSUSDT": {
     "extreme": false,
     "extreme_duration": 0,
     "high": false,
@@ -485,13 +497,31 @@
     "high": false,
     "high_duration": 0
   },
+  "PANWUSDT": {
+    "extreme": false,
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
+  },
   "PAYPUSDT": {
     "extreme": false,
     "extreme_duration": 0,
     "high": false,
     "high_duration": 0
   },
+  "PENGUSDT": {
+    "extreme": false,
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
+  },
   "PLTRUSDT": {
+    "extreme": false,
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
+  },
+  "PYPLUSDT": {
     "extreme": false,
     "extreme_duration": 0,
     "high": false,
@@ -527,6 +557,12 @@
     "high": false,
     "high_duration": 0
   },
+  "SHAZUSDT": {
+    "extreme": false,
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
+  },
   "SKHYUSDT": {
     "extreme": false,
     "extreme_duration": 0,
@@ -534,6 +570,12 @@
     "high_duration": 0
   },
   "SMCIUSDT": {
+    "extreme": false,
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
+  },
+  "SMHUSDT": {
     "extreme": false,
     "extreme_duration": 0,
     "high": false,
@@ -552,6 +594,12 @@
     "high_duration": 0
   },
   "SNXXUSDT": {
+    "extreme": false,
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
+  },
+  "SOFIUSDT": {
     "extreme": false,
     "extreme_duration": 0,
     "high": false,
@@ -605,7 +653,19 @@
     "high": false,
     "high_duration": 0
   },
+  "TBTUSDT": {
+    "extreme": false,
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
+  },
   "TERUSDT": {
+    "extreme": false,
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
+  },
+  "TMFUSDT": {
     "extreme": false,
     "extreme_duration": 0,
     "high": false,
@@ -719,5 +779,5 @@
     "high": false,
     "high_duration": 0
   },
-  "_heartbeat": "2026-07-19T23:32:46.871445+00:00"
+  "_heartbeat": "2026-08-01T16:43:02.355039+00:00"
 }
