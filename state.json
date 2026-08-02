@@ -133,7 +133,7 @@
   },
   "BXUSDT": {
     "extreme": true,
-    "extreme_duration": 1,
+    "extreme_duration": 2,
     "high": false,
     "high_duration": 0
   },
@@ -779,5 +779,5 @@
     "high": false,
     "high_duration": 0
   },
-  "_heartbeat": "2026-08-02T22:41:17.755941+00:00"
+  "_heartbeat": "2026-08-02T23:43:43.064740+00:00"
 }
