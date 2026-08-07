@@ -132,8 +132,8 @@
     "high_duration": 0
   },
   "BXUSDT": {
-    "extreme": true,
-    "extreme_duration": 2,
+    "extreme": false,
+    "extreme_duration": 0,
     "high": false,
     "high_duration": 0
   },
@@ -278,8 +278,8 @@
   "FWDIUSDT": {
     "extreme": false,
     "extreme_duration": 0,
-    "high": false,
-    "high_duration": 0
+    "high": true,
+    "high_duration": 1
   },
   "GEVUSDT": {
     "extreme": false,
@@ -378,6 +378,12 @@
     "high_duration": 0
   },
   "KORUUSDT": {
+    "extreme": false,
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
+  },
+  "KOUSDT": {
     "extreme": false,
     "extreme_duration": 0,
     "high": false,
@@ -540,6 +546,12 @@
     "high_duration": 0
   },
   "QQQUSDT": {
+    "extreme": false,
+    "extreme_duration": 0,
+    "high": false,
+    "high_duration": 0
+  },
+  "RDDTUSDT": {
     "extreme": false,
     "extreme_duration": 0,
     "high": false,
@@ -779,5 +791,5 @@
     "high": false,
     "high_duration": 0
   },
-  "_heartbeat": "2026-08-02T23:43:43.064740+00:00"
+  "_heartbeat": "2026-08-07T12:26:06.650143+00:00"
 }
