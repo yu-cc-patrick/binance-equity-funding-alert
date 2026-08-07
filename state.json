@@ -279,7 +279,7 @@
     "extreme": false,
     "extreme_duration": 0,
     "high": true,
-    "high_duration": 1
+    "high_duration": 2
   },
   "GEVUSDT": {
     "extreme": false,
@@ -791,5 +791,5 @@
     "high": false,
     "high_duration": 0
   },
-  "_heartbeat": "2026-08-07T12:26:06.650143+00:00"
+  "_heartbeat": "2026-08-07T13:50:20.086015+00:00"
 }
