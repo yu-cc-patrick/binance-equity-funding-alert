@@ -278,8 +278,8 @@
   "FWDIUSDT": {
     "extreme": false,
     "extreme_duration": 0,
-    "high": true,
-    "high_duration": 2
+    "high": false,
+    "high_duration": 0
   },
   "GEVUSDT": {
     "extreme": false,
@@ -791,5 +791,5 @@
     "high": false,
     "high_duration": 0
   },
-  "_heartbeat": "2026-08-07T13:50:20.086015+00:00"
+  "_heartbeat": "2026-08-07T21:48:10.829157+00:00"
 }
