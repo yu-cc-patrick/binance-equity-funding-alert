@@ -751,7 +751,7 @@
   },
   "VUSDT": {
     "extreme": true,
-    "extreme_duration": 1,
+    "extreme_duration": 2,
     "high": false,
     "high_duration": 0
   },
@@ -791,5 +791,5 @@
     "high": false,
     "high_duration": 0
   },
-  "_heartbeat": "2026-08-10T22:40:16.209575+00:00"
+  "_heartbeat": "2026-08-10T23:19:12.228675+00:00"
 }
