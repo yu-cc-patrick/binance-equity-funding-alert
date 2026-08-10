@@ -6,8 +6,8 @@
     "high_duration": 0
   },
   "AAPLUSDT": {
-    "extreme": true,
-    "extreme_duration": 5,
+    "extreme": false,
+    "extreme_duration": 0,
     "high": false,
     "high_duration": 0
   },
@@ -336,8 +336,8 @@
     "high_duration": 0
   },
   "IBMUSDT": {
-    "extreme": true,
-    "extreme_duration": 5,
+    "extreme": false,
+    "extreme_duration": 0,
     "high": false,
     "high_duration": 0
   },
@@ -791,5 +791,5 @@
     "high": false,
     "high_duration": 0
   },
-  "_heartbeat": "2026-08-09T23:40:48.560494+00:00"
+  "_heartbeat": "2026-08-10T00:05:39.959516+00:00"
 }
