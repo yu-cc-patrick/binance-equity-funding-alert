@@ -23,6 +23,7 @@ from datetime import datetime, timezone
 
 RATE_THRESHOLD = 0.01          # 1%
 EXTREME_INTERVAL_HOURS = 1     # 周期降到 1h 视为极端
+ALERT_DAILY_MAX = 2            # 同一标的每天最多报几次
 DEFAULT_INTERVAL_HOURS = 8     # 未在 fundingInfo 中的币种默认 8h
 
 # 只监控这些 underlyingType 的标的(币安把链上美股标为 EQUITY)。
@@ -31,6 +32,7 @@ EQUITY_TYPES = {"EQUITY"}
 
 # 状态文件放脚本同目录, 不依赖运行时的工作目录
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+DAILY_ALERT_FILE = os.path.join(SCRIPT_DIR, "alert_daily.json")
 STATE_FILE = os.path.join(SCRIPT_DIR, "state.json")
 PENDING_FILE = os.path.join(SCRIPT_DIR, "pending_wx.json")
 EQUITY_CACHE = os.path.join(SCRIPT_DIR, "equity_list.json")  # 美股清单缓存(防 exchangeInfo 间歇502)
@@ -296,6 +298,60 @@ def _save_pending(messages):
         os.remove(PENDING_FILE)
 
 
+def _load_daily_alerts():
+    """加载单标的每日预警计数: {"2026-07-27": {"AAPLUSDT": 2, ...}}"""
+    try:
+        with open(DAILY_ALERT_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except (json.JSONDecodeError, OSError):
+        return {}
+
+
+def _save_daily_alerts(data):
+    with open(DAILY_ALERT_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+
+def _filter_daily_limit(alerts):
+    """过滤掉同一天同一标的超过 ALERT_DAILY_MAX 次的预警。
+    返回 (保留的预警列表, 被过滤掉的预警列表)。
+    """
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    daily = _load_daily_alerts()
+    if today not in daily:
+        daily[today] = {}
+
+    kept = []
+    dropped = []
+    for msg in alerts:
+        # 从消息中提取 symbol（格式: "<b>SYMBOL</b>"）
+        import re
+        m = re.search(r'<b>(\w+)</b>', msg)
+        symbol = m.group(1) if m else None
+
+        if symbol:
+            count = daily[today].get(symbol, 0)
+            if count >= ALERT_DAILY_MAX:
+                dropped.append((symbol, msg[:50]))
+                continue
+            daily[today][symbol] = count + 1
+
+        kept.append(msg)
+
+    if dropped:
+        print(f"[INFO] 单标的上限过滤: {len(dropped)} 条 (已达 {ALERT_DAILY_MAX} 次/天)")
+        for sym, preview in dropped:
+            print(f"  - {sym}: {preview}...")
+
+    # 清理 7 天前的数据
+    from datetime import timedelta
+    cutoff = (datetime.now(timezone.utc) - timedelta(days=7)).strftime("%Y-%m-%d")
+    daily = {d: v for d, v in daily.items() if d >= cutoff}
+
+    _save_daily_alerts(daily)
+    return kept
+
+
 def send_telegram(text):
     if not TG_TOKEN or not TG_CHAT_ID:
         print("[WARN] 未配置 Telegram, 跳过推送:\n" + text)
@@ -550,6 +606,9 @@ def main():
         if not need_heartbeat:
             print("[INFO] 心跳跳过(未到间隔)。")
         return
+
+    # ── 单标的每日限流: 同一天同一标的超过 ALERT_DAILY_MAX 次就跳过 ──
+    alerts = _filter_daily_limit(alerts)
 
     wx_queued = 0
     for msg in alerts:
