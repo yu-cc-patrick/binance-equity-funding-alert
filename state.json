@@ -90,8 +90,8 @@
     "high_duration": 0
   },
   "AVGOUSDT": {
-    "extreme": true,
-    "extreme_duration": 2,
+    "extreme": false,
+    "extreme_duration": 0,
     "high": false,
     "high_duration": 0
   },
@@ -504,8 +504,8 @@
     "high_duration": 0
   },
   "METAUSDT": {
-    "extreme": true,
-    "extreme_duration": 2,
+    "extreme": false,
+    "extreme_duration": 0,
     "high": false,
     "high_duration": 0
   },
@@ -672,8 +672,8 @@
     "high_duration": 0
   },
   "QQQUSDT": {
-    "extreme": true,
-    "extreme_duration": 2,
+    "extreme": false,
+    "extreme_duration": 0,
     "high": false,
     "high_duration": 0
   },
@@ -918,8 +918,8 @@
     "high_duration": 0
   },
   "VSTUSDT": {
-    "extreme": true,
-    "extreme_duration": 2,
+    "extreme": false,
+    "extreme_duration": 0,
     "high": false,
     "high_duration": 0
   },
@@ -948,14 +948,14 @@
     "high_duration": 0
   },
   "XBIUSDT": {
-    "extreme": true,
-    "extreme_duration": 2,
+    "extreme": false,
+    "extreme_duration": 0,
     "high": false,
     "high_duration": 0
   },
   "XLEUSDT": {
-    "extreme": true,
-    "extreme_duration": 2,
+    "extreme": false,
+    "extreme_duration": 0,
     "high": false,
     "high_duration": 0
   },
@@ -971,5 +971,5 @@
     "high": false,
     "high_duration": 0
   },
-  "_heartbeat": "2026-09-20T21:52:40.194706+00:00"
+  "_heartbeat": "2026-09-21T01:44:41.215459+00:00"
 }
