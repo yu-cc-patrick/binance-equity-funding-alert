@@ -1,5 +1,11 @@
 # binance-equity-funding-alert
 
+> **一句话**：专门盯链上美股永续（AAPLUSDT、MSFTUSDT 等约 87 个标的）的资金费率异常，发生极端行情时推送 Telegram。
+>
+> **状态**：🟢 运行中 · 77 次提交 · 与 [funding-rate-alert](https://github.com/yu-cc-patrick/funding-rate-alert) 共用同一套架构和 relay
+>
+> **为什么单独做一个**：链上美股永续在传统市场休市时段缺少定价锚，费率行为和加密原生币完全不同——把它和普通永续混在一起监控，会漏掉这一类的结构性异常。
+
 监控币安 USDⓈ-M 上**全部链上美股永续**(tokenized equity perp,如 AAPLUSDT / MSFTUSDT)的资金费率,出现极端情况时推送 Telegram 预警。
 
 是 [funding-rate-alert](../funding-rate-alert) 的姊妹项目:同一套架构、同一个 relay、同样的两类触发条件,唯一区别是**监控范围**从「全部 USDT 永续」收窄到「`underlyingType == EQUITY` 的标的」。
@@ -28,7 +34,7 @@ GitHub Actions(每 5 分钟)→ Render 新加坡 relay → 币安。relay 用来
 1. 新建私有 GitHub 仓库,推上本目录。
 2. 仓库 Settings → Secrets and variables → Actions,加 4 个 secret:
    - `TELEGRAM_BOT_TOKEN`、`TELEGRAM_CHAT_ID`(可与 funding-rate-alert 共用)
-   - `BINANCE_BASE` = `https://binance-relay-jaeb.onrender.com`
+   - `BINANCE_BASE` = 你的 relay 地址（形如 `https://binance-relay-xxxx.onrender.com`）
    - `RELAY_TOKEN` = relay 端设的鉴权密钥(与 funding-rate-alert 一致)
 3. Actions 页手动触发一次(workflow_dispatch),首轮建立基线、不推送。
 4. 之后每 5 分钟自动跑,状态变化时推 Telegram。
@@ -43,7 +49,7 @@ GitHub Actions(每 5 分钟)→ Render 新加坡 relay → 币安。relay 用来
 ```bash
 security add-generic-password -a "$USER" -s "binance-alert/TELEGRAM_BOT_TOKEN" -w '你的bottoken' -U
 security add-generic-password -a "$USER" -s "binance-alert/TELEGRAM_CHAT_ID"   -w '5862266477' -U
-security add-generic-password -a "$USER" -s "binance-alert/BINANCE_BASE"       -w 'https://binance-relay-jaeb.onrender.com' -U
+security add-generic-password -a "$USER" -s "binance-alert/BINANCE_BASE"       -w 'https://binance-relay-xxxx.onrender.com' -U
 security add-generic-password -a "$USER" -s "binance-alert/RELAY_TOKEN"        -w 'relay密钥' -U
 ```
 
